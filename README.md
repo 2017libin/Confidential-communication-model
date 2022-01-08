@@ -1,6 +1,6 @@
 # Confidential-communication-model
 
-实现如下保密通信模型。其中，(1)表示$E_k[M||E_{SK_A}[H(M)]]$、(2)表示$PK_A$。使用python库**pycrypto**来实现。
+信息系统安全节课作业题目之一：实现如下保密通信模型。其中，(1)表示$E_k[M||E_{SK_A}[H(M)]]$、(2)表示$PK_A$。本项目中使用python库**pycrypto**来实现。
 
 ![image-20220107210905391](https://gitee.com/llbd/md-gallery/raw/master/image-20220107210905391.png)
 
@@ -23,10 +23,17 @@
   AttributeError: module 'time' has no attribute 'clock'
   ```
 修改该文件中的time.clock()为time.perf_counter()
+
+2. 使用私钥加密，公钥解密时发生错误：
+```
+TypeError: Private key not available in this object
+```
+表示在pycrypto库中不支持使用私钥加密，公钥解密。更推荐的做法是使用私钥签名，公钥验签。因此，使用**签名和验签函数**来替换掉原有的**私钥加密/公钥解密函数**。
 # 参考链接
 - [SSL中，公钥，私钥，证书的后缀名](https://blog.csdn.net/master_yao/article/details/78153933)
-- [杂项之python利用pycrypto实现RSA](https://www.cnblogs.com/huxianglin/p/6387045.html)
+- [Python 使用 pycrypto 进行 rsa 公私钥加解密和签名验证](https://wxnacy.com/2018/08/17/python-pycrypto-rsa/)
 - [Python Cryptography Toolkit](https://www.dlitz.net/software/pycrypto/doc/)
 - [python文件读写](https://www.liaoxuefeng.com/wiki/1016959663602400/1017607179232640)
 - [python 报错 AttributeError: module ‘time‘ has no attribute ‘clock 解决方法](https://blog.csdn.net/whatday/article/details/112659677)
 - [填充函数pad和unpad](https://www.cjavapy.com/article/243/)
+- [decrypt a message with RSA public key with PyCrypto](https://stackoverflow.com/questions/20164397/decrypt-a-message-with-rsa-public-key-with-pycrypto)
