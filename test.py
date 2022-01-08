@@ -7,6 +7,7 @@ from Crypto.Hash import SHA
 from Crypto.Cipher import PKCS1_v1_5 as Cipher_pkcs1_v1_5
 from Crypto.Signature import PKCS1_v1_5 as Signature_pkcs1_v1_5
 from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP
 import base64
 
 
@@ -37,8 +38,25 @@ def verify_signature(message, signature, pub_rsa_path):
         is_verify = verifier.verify(digest, signature)
         return is_verify
 
+def generate_keys():
+    modulus_lenght = 256 * 4
+    private_key = RSA.generate(modulus_lenght, Random.new().read)
+    public_key = private_key.publickey()
+    return private_key, public_key
 
-if __name__ == "__main__":
+def encrypt_private_key(a_message, private_key):
+    encryptor = PKCS1_OAEP.new(private_key)
+    encrypted_msg = encryptor.encrypt(a_message)
+    encoded_encrypted_msg = base64.b64encode(encrypted_msg)
+    return encoded_encrypted_msg
+
+def decrypt_public_key(encoded_encrypted_msg, public_key):
+    encryptor = PKCS1_OAEP.new(public_key)
+    decoded_encrypted_msg = base64.b64decode(encoded_encrypted_msg)
+    decoded_decrypted_msg = encryptor.decrypt(decoded_encrypted_msg)
+    return decoded_decrypted_msg
+
+if __name__ == "__main__": 
     plain = 'message'
 
     sign_pub_rsa_path = 'rsa_pubk.crt'

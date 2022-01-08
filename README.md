@@ -29,3 +29,4 @@
 - [Python Cryptography Toolkit](https://www.dlitz.net/software/pycrypto/doc/)
 - [python文件读写](https://www.liaoxuefeng.com/wiki/1016959663602400/1017607179232640)
 - [python 报错 AttributeError: module ‘time‘ has no attribute ‘clock 解决方法](https://blog.csdn.net/whatday/article/details/112659677)
+- [填充函数pad和unpad](https://www.cjavapy.com/article/243/)
