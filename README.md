@@ -1,7 +1,11 @@
 # Confidential-communication-model
 
-信息系统安全节课作业题目之一：实现如下保密通信模型。其中，(1)表示$E_k[M||E_{SK_A}[H(M)]]$、(2)表示$PK_A$。本项目中使用python库**pycrypto**来实现。
+信息系统安全节课作业题目之一：实现如下保密通信模型。其中，(1)表示$E_k[M||E_{SK_A}[H(M)]]$、(2)表示$PK_A$。本项目中使用python库**pycrypto**来实现。代码中使用send2和receive2来表示通信模型2中的发送和接受实体，send3和receive3来表示通信模型3中的发送和接收实体。
 
+1. 通信模型2：
+![image-20220121175913269](https://gitee.com/llbd/md-gallery/raw/master/image-20220121175913269.png)
+
+2. 通信模型3：
 ![image-20220107210905391](https://gitee.com/llbd/md-gallery/raw/master/image-20220107210905391.png)
 
 - 运行环境：python3.8.10 + wls2

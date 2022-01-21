@@ -71,9 +71,65 @@ def gen_rsa_key():
         f1.write(rsa_pk)
     with open("rsa_pubk.crt", "wb") as f2:
         f2.write(rsa_pubk)
-    
+
 # 将src文件的内容进行保密处理后存入dst文件中
-def send(src_path:str, dst_path:str):
+def send2(src_path:str, dst_path:str):
+    # 以字节流的方式读取文件内容
+    bytes = read_file_by_byte(src_path)  # 以字节的形式返回文件内容
+
+    # 对文件进行hash
+    md = SHA256.new()
+    md.update(bytes)
+    hash_value = md.digest()
+    
+    # 使用AES对 消息||加密的哈希值 进行加密
+    aes_key = b"0123456789abcdef"
+    iv = b"0123456789abcdef"
+    aes_obj = AES.new(aes_key, AES.MODE_CBC, iv)  # 面向分组的传输使用CBC加密模式
+    padded_plaintext = pad(bytes+hash_value, AES.block_size)
+    ciphertext = aes_obj.encrypt(padded_plaintext)
+    
+    # 密文使用base64编码
+    encoded_ciphertext = base64.encodebytes(ciphertext)
+    
+    # 写入到目标文件
+    with open(dst_path, 'wb') as f:
+        f.write(encoded_ciphertext)
+
+# 对收到的src文件的保密内容进行解密和验证后放入dst文件中
+def receive2(src_path:str, dst_path):
+    # 以字节流的方式读取文件内容
+    encoded_ciphertext = read_file_by_byte(src_path)  # 以字节的形式返回文件内容
+
+    # 使用base64编码对密文进行解码
+    ciphertext = base64.decodebytes(encoded_ciphertext)
+
+    # 使用AES对 消息||哈希值 进行解密
+    aes_key = b"0123456789abcdef"
+    iv = b"0123456789abcdef"
+    aes_obj = AES.new(aes_key, AES.MODE_CBC, iv)  # 面向分组的传输使用CBC加密模式
+    padded_plaintext = aes_obj.decrypt(ciphertext)
+
+    plaintext = unpad(padded_plaintext, AES.block_size)
+
+    # 获取文件内容和签名值
+    bytes = plaintext[:-32]
+    hash_value1 = plaintext[-32:]
+
+    # 验证哈希值是否一致
+    # 对文件进行hash
+    md = SHA256.new()
+    md.update(bytes)
+    hash_value2 = md.digest()
+
+    if hash_value1 == hash_value2:
+        with open(dst_path, 'wb') as f:
+            f.write(bytes)
+    else:
+        print("检验失败!")
+
+# 将src文件的内容进行保密处理后存入dst文件中
+def send3(src_path:str, dst_path:str):
     # 以字节流的方式读取文件内容
     bytes = read_file_by_byte(src_path)  # 以字节的形式返回文件内容
 
@@ -95,7 +151,7 @@ def send(src_path:str, dst_path:str):
         f.write(encoded_ciphertext)
 
 # 对收到的src文件的保密内容进行解密和验证后放入dst文件中
-def receive(src_path:str, dst_path):
+def receive3(src_path:str, dst_path):
     # 以字节流的方式读取文件内容
     encoded_ciphertext = read_file_by_byte(src_path)  # 以字节的形式返回文件内容
 
@@ -111,8 +167,8 @@ def receive(src_path:str, dst_path):
     plaintext = unpad(padded_plaintext, AES.block_size)
 
     # 获取文件内容和签名值
-    bytes = plaintext[:-128]
-    sign = plaintext[-128:]
+    bytes = plaintext[:-32]
+    sign = plaintext[-32:]
 
     # 验证签名是否通过
     if verify_signature(bytes, sign, "rsa_pubk.crt"):
@@ -122,6 +178,8 @@ def receive(src_path:str, dst_path):
         print("验签失败!")
 
 if __name__ == "__main__":
-    send("test","111")
-    receive("111", "222")
+
+
+    send2("test","111")
+    receive2("111", "222")
     # gen_rsa_key()
